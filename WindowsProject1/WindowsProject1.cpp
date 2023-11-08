@@ -157,11 +157,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             break;
 
         case ID_CHANGE_CURSOR:
-            SetCursor(LoadCursor(hInst, MAKEINTRESOURCE(IDC_ARROW)));
+        {
+            HCURSOR newCur = LoadCursorFromFile(L"arrow.cur");
+            if (newCur) {
+                SetClassLongPtr(hWnd, GCLP_HCURSOR, (LONG_PTR)newCur);
+            }
+        }
             break;
 
         case ID_CHANGE_ICON:
-            SetClassLong(hWnd, GCLP_HICON, (LONG)LoadIcon(hInst, MAKEINTRESOURCE(IDI_WARNING)));
+        {
+            HICON newIcon= LoadCursorFromFile(L"warning.ico");
+            if (newIcon) {
+                SetClassLongPtr(hWnd, GCLP_HICON, (LONG_PTR)newIcon);
+            }
+        }
             break;
 
         case WM_DESTROY: // Завершення роботи
