@@ -3,8 +3,8 @@
 
 // Глобальні змінні:
 HINSTANCE hInst; // Дескриптор програми
-LPCTSTR szWindowClass = L"YourLastName"; // Ім'я класу вікна
-LPCTSTR szTitle = L"Про програму"; // Заголовок вікна
+LPCTSTR studentName = TEXT("Prylutska,Rozumenko,Sidelnikov"); // Ім'я класу вікна
+LPCTSTR szTitle = L"B-4"; // Заголовок вікна
 
 // Попередній опис функцій
 ATOM MyRegisterClass(HINSTANCE hInstance);
@@ -49,7 +49,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     wcex.hCursor = LoadCursor(NULL, IDC_CROSS);
     wcex.hbrBackground = (HBRUSH)(COLOR_GRAYTEXT + 1); // Фон вікна (темно-сірий)
     wcex.lpszMenuName = MAKEINTRESOURCE(IDR_MENU1); // Меню
-    wcex.lpszClassName = szWindowClass; // Ім'я класу
+    wcex.lpszClassName = studentName; // Ім'я класу
     wcex.hIconSm = NULL;
 
     return RegisterClassEx(&wcex); // Реєстрація класу вікна
@@ -59,12 +59,12 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
     HWND hWnd;
 
-    hInst = hInstance; // Зберігає дескриптор додатка в змінній hInst
+    hInst = hInstance;
 
     // Створення вікна програми
-    hWnd = CreateWindow(szWindowClass, // Ім'я класу вікна
+    hWnd = CreateWindow(studentName, // Ім'я класу вікна
         szTitle, // Назва програми
-        WS_MINIMIZEBOX | WS_HSCROLL | WS_VSCROLL, // Стиль вікна
+        WS_CAPTION | WS_MINIMIZEBOX | WS_HSCROLL | WS_VSCROLL| WS_SYSMENU, // Стиль вікна
         50, // Позиція по X
         90, // Позиція по Y
         400, // Ширина
@@ -92,12 +92,20 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     switch (message)
     {
     case WM_INITDIALOG:
+        SetDlgItemText(hDlg, IDC_PROGRAM_INFO, L"Виконали: Прилуцька Розуменко Сідєльніков");
         return (INT_PTR)TRUE;
 
     case WM_COMMAND:
-        if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL || LOWORD(wParam) == ID_CLOSE)
+        switch (LOWORD(wParam))
         {
+        case IDOK:
+        case IDCANCEL:
+        case ID_CLOSE:
             EndDialog(hDlg, LOWORD(wParam));
+            return (INT_PTR)TRUE;
+
+        case ID_DETAILS:
+            MessageBox(hDlg, L"Лабораторна робота 1. Виконала бригада нимер 4: Прилуцька Марія, Розуменко Олексій, Сідєльніков Денис", L"Докладніше", MB_OK);
             return (INT_PTR)TRUE;
         }
         break;
@@ -105,12 +113,11 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     return (INT_PTR)FALSE;
 }
 
-
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
     {
-    case WM_LBUTTONDBLCLK: // Подвійне натискання лівої кнопки миші
+    case WM_LBUTTONDBLCLK:
     {
         POINT pt;
         GetCursorPos(&pt);
@@ -119,8 +126,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         GetClientRect(hWnd, &rc);
         if (PtInRect(&rc, pt))
         {
-            // Ваш код обробки подвійного натискання миші в межах вікна
-            // Наприклад, виведення повідомлення про подвійне натискання миші
             MessageBox(hWnd, L"Подвійне натискання миші в межах вікна", L"Повідомлення", MB_OK);
         }
     }
@@ -130,21 +135,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         switch (LOWORD(wParam))
         {
         case ID_ABOUT:
-            // Відобразити діалогове вікно "Про програму"
             DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
-            break;
-
-        case ID_EXIT:
-            // Питання про закриття програми
-            if (MessageBox(hWnd, L"Ви впевнені?", L"Підтвердження", MB_YESNO | MB_ICONQUESTION) == IDYES)
-            {
-                DestroyWindow(hWnd);
-            }
             break;
 
         case ID_CHANGE_BGCOLOR:
         {
-            // Змінити колір фону вікна
             HBRUSH hBrush = CreateSolidBrush(RGB(50, 100, 100));
             SetClassLongPtr(hWnd, GCLP_HBRBACKGROUND, (LONG_PTR)hBrush);
             InvalidateRect(hWnd, NULL, TRUE);
@@ -152,7 +147,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
 
         case ID_CHANGE_SIZE:
-            // Змінити розміри вікна
             SetWindowPos(hWnd, HWND_TOP, 50, 90, 600, 700, SWP_SHOWWINDOW);
             break;
 
@@ -163,24 +157,32 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 SetClassLongPtr(hWnd, GCLP_HCURSOR, (LONG_PTR)newCur);
             }
         }
-            break;
+        break;
 
         case ID_CHANGE_ICON:
         {
-            HICON newIcon= LoadCursorFromFile(L"warning.ico");
+            HICON newIcon = LoadCursorFromFile(L"warning.ico");
             if (newIcon) {
                 SetClassLongPtr(hWnd, GCLP_HICON, (LONG_PTR)newIcon);
             }
         }
-            break;
-
-        case WM_DESTROY: // Завершення роботи
-            PostQuitMessage(0);
-            break;
+        break;
         }
-    break;
+        break;
+
+    case WM_CLOSE:
+    {
+        int result = MessageBox(hWnd, L"Ви впевнені?", L"Підтвердження", MB_YESNO | MB_ICONQUESTION);
+
+        if (result == IDYES)
+        {
+            DestroyWindow(hWnd);
+        }
+
+        return 0;
+    }
+
     default:
-        // Обробка повідомлень, які не оброблені користувачем
         return DefWindowProc(hWnd, message, wParam, lParam);
     }
     return 0;
